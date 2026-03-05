@@ -7,8 +7,8 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = {"departamento", "rol"})
-@EqualsAndHashCode(exclude = {"departamento", "rol"})
+@ToString(exclude = {"departamento", "rol", "usuario"})
+@EqualsAndHashCode(exclude = {"departamento", "rol", "usuario"})
 @Entity
 public class Docente {
 
@@ -35,4 +35,8 @@ public class Docente {
     @ManyToOne
     @JoinColumn(name = "rol_id")
     private Rol rol;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
 }
