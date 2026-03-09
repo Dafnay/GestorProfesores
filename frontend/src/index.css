@@ -67,7 +67,130 @@ tr:hover {
   margin-top: 1rem;
 }
 
-/* Login */
+/* Login split */
+.login-split {
+  display: flex;
+  min-height: 100vh;
+}
+
+.login-split__image {
+  flex: 0 0 50%;
+  background-image: url('./assets/images/classroom.jpg');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.login-split__image-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(44, 62, 80, 0.65);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 3rem;
+  color: white;
+}
+
+.login-split__image-overlay h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: white;
+}
+
+.login-split__image-overlay p {
+  font-size: 1rem;
+  opacity: 0.85;
+}
+
+.login-split__panel {
+  flex: 0 0 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  padding: 2rem;
+}
+
+.login-split__form {
+  width: 100%;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.login-split__form h2 {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 0;
+}
+
+.login-split__subtitle {
+  font-size: 0.9rem;
+  color: #888;
+  margin-top: -0.6rem;
+}
+
+.login-split__form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  color: #444;
+}
+
+.login-split__form input {
+  padding: 0.65rem 0.9rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s;
+  background: #fafafa;
+}
+
+.login-split__form input:focus {
+  border-color: #2c3e50;
+  background: #fff;
+}
+
+.login-split__form button[type='submit'] {
+  padding: 0.75rem;
+  background-color: #2c3e50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 0.3rem;
+}
+
+.login-split__form button[type='submit']:hover:not(:disabled) {
+  background-color: #3d5166;
+}
+
+.login-split__form button[type='submit']:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.login-split__forgot {
+  text-align: right;
+  font-size: 0.85rem;
+  color: #888;
+  text-decoration: none;
+}
+
+.login-split__forgot:hover {
+  color: #2c3e50;
+}
+
+/* Login container (páginas secundarias: forgot, reset, setup) */
 .login-container {
   display: flex;
   justify-content: center;
@@ -142,6 +265,49 @@ tr:hover {
 .login-form button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+/* Responsive login */
+@media (max-width: 768px) {
+  .login-split {
+    position: relative;
+  }
+
+  .login-split__image {
+    position: fixed;
+    inset: 0;
+    flex: none;
+    width: 100%;
+    height: 100%;
+  }
+
+  .login-split__panel {
+    position: relative;
+    z-index: 1;
+    flex: none;
+    width: 100%;
+    min-height: 100vh;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .login-split__image-overlay h1,
+  .login-split__image-overlay p {
+    display: none;
+  }
+
+  .login-split__form {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(6px);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    width: 100%;
+    max-width: 100%;
+  }
 }
 
 /* Nav usuario y logout */

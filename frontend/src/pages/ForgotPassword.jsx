@@ -19,34 +19,43 @@ export default function ForgotPassword() {
   }
 
   return (
-    <div className="login-container">
-      <form className="login-form" onSubmit={handleSubmit}>
-        <h1>Gestor de Profesores</h1>
-        <h2>Recuperar contraseña</h2>
+    <div className="login-split">
 
-        <p style={{ fontSize: '0.85rem', color: '#666', marginBottom: '-0.3rem' }}>
-          Introduce tu email y te enviaremos un enlace para restablecer tu contraseña.
-        </p>
+      <div className="login-split__panel">
+        <form className="login-split__form" onSubmit={handleSubmit}>
+          <h2>Recuperar contraseña</h2>
+          <p className="login-split__subtitle">
+            Introduce tu email y te enviaremos un enlace para restablecerla.
+          </p>
 
-        <label>
-          Email
-          <input
-            type="email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            required
-            autoFocus
-          />
-        </label>
+          <label>
+            Email
+            <input
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              required
+              autoFocus
+            />
+          </label>
 
-        <button type="submit" disabled={loading}>
-          {loading ? 'Enviando...' : 'Enviar enlace'}
-        </button>
+          <button type="submit" disabled={loading}>
+            {loading ? 'Enviando...' : 'Enviar enlace'}
+          </button>
 
-        <Link to="/" style={{ textAlign: 'center', fontSize: '0.85rem', color: '#2c3e50' }}>
-          Volver al inicio de sesión
-        </Link>
-      </form>
+          <Link to="/" className="login-split__forgot">
+            Volver al inicio de sesión
+          </Link>
+        </form>
+      </div>
+
+      <div className="login-split__image">
+        <div className="login-split__image-overlay">
+          <h1>Gestor de Profesores</h1>
+          <p>Gestión integral del equipo docente</p>
+        </div>
+      </div>
+
     </div>
   )
 }

@@ -19,48 +19,58 @@ export default function Login() {
       const res = await authApi.login(email, password)
       login(res.data.token, res.data.username, res.data.role, res.data.nombre, res.data.apellidos)
     } catch {
-      setError('Usuario o contraseña incorrectos')
+      setError('Email o contraseña incorrectos')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="login-container">
-      <form className="login-form" onSubmit={handleSubmit}>
-        <h1>Gestor de Profesores</h1>
-        <h2>Iniciar sesión</h2>
+    <div className="login-split">
 
-        <label>
-          Email
-          <input
-            type="email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            required
-            autoFocus
-          />
-        </label>
+      <div className="login-split__image">
+        <div className="login-split__image-overlay">
+          <h1>Gestor de Profesores</h1>
+          <p>Gestión integral del equipo docente</p>
+        </div>
+      </div>
 
-        <label>
-          Contraseña
-          <PasswordInput
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            required
-          />
-        </label>
+      <div className="login-split__panel">
+        <form className="login-split__form" onSubmit={handleSubmit}>
+          <h2>Iniciar sesión</h2>
 
-        {error && <p className="error">{error}</p>}
+          <label>
+            Email
+            <input
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              required
+              autoFocus
+            />
+          </label>
 
-        <button type="submit" disabled={loading}>
-          {loading ? 'Entrando...' : 'Entrar'}
-        </button>
+          <label>
+            Contraseña
+            <PasswordInput
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
+            />
+          </label>
+         
+          {error && <p className="error">{error}</p>}
 
-        <Link to="/forgot-password" style={{ textAlign: 'center', fontSize: '0.85rem', color: '#2c3e50' }}>
-          He olvidado mi contraseña
-        </Link>
-      </form>
+          <button type="submit" disabled={loading}>
+            {loading ? 'Entrando...' : 'Entrar'}
+          </button>
+
+          <Link to="/forgot-password" className="login-split__forgot">
+            He olvidado mi contraseña
+          </Link>
+        </form>
+      </div>
+
     </div>
   )
 }
