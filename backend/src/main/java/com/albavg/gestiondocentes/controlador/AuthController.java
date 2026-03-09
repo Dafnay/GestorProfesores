@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import java.util.UUID;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -122,13 +123,17 @@ public class AuthController {
     @Operation(summary = "Solicitar restablecimiento de contraseña",
             description = "Envía un email con enlace para restablecer la contraseña. Siempre responde 200 para no revelar si el email existe.")
     @ApiResponse(responseCode = "200", description = "Email enviado si el usuario existe")
+    @Transactional
     @PostMapping("/forgot-password")
     public ResponseEntity<Void> forgotPassword(@RequestBody ForgotPasswordRequest request) {
         usuarioRepository.findByEmail(request.email()).ifPresent(usuario -> {
             setupTokenRepository.deleteByUsuario(usuario);
             String token = UUID.randomUUID().toString();
             setupTokenRepository.save(new SetupToken(token, usuario));
-            emailService.enviarResetPassword(usuario.getEmail(), usuario.getUsername(), token);
+            String nombreCompleto = docenteRepository.findByUsuario(usuario)
+                    .map(d -> d.getNombre() + " " + d.getApellidos())
+                    .orElse(usuario.getUsername());
+            emailService.enviarResetPassword(usuario.getEmail(), nombreCompleto, token);
         });
         return ResponseEntity.ok().build();
     }

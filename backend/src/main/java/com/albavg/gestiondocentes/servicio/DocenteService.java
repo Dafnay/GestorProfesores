@@ -71,7 +71,7 @@ public class DocenteService {
         String token = UUID.randomUUID().toString();
         setupTokenRepository.save(new SetupToken(token, saved.getUsuario()));
 
-        emailService.enviarSetupPassword(request.email(), request.nombre(), token);
+        emailService.enviarSetupPassword(request.email(), request.nombre() + " " + request.apellidos(), token);
 
         return saved;
     }
