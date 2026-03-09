@@ -1,8 +1,10 @@
 package com.albavg.gestiondocentes.controlador;
 
 import com.albavg.gestiondocentes.dto.*;
+import com.albavg.gestiondocentes.servicio.EmailService;
 import com.albavg.gestiondocentes.modelo.SetupToken;
 import com.albavg.gestiondocentes.modelo.Usuario;
+import com.albavg.gestiondocentes.repositorio.DocenteRepository;
 import com.albavg.gestiondocentes.repositorio.SetupTokenRepository;
 import com.albavg.gestiondocentes.repositorio.UsuarioRepository;
 import com.albavg.gestiondocentes.security.JwtUtil;
@@ -16,6 +18,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import java.util.UUID;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -34,7 +37,9 @@ public class AuthController {
     private final JwtUtil jwtUtil;
     private final SetupTokenRepository setupTokenRepository;
     private final UsuarioRepository usuarioRepository;
+    private final DocenteRepository docenteRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     @Operation(
             summary = "Registrar un nuevo usuario",
@@ -74,13 +79,23 @@ public class AuthController {
     @ApiResponse(responseCode = "401", description = "Credenciales incorrectas")
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
+        Usuario usuarioPorEmail = usuarioRepository.findByEmail(request.email())
+                .orElseThrow(() -> new org.springframework.security.authentication.BadCredentialsException("Credenciales incorrectas"));
+
         Authentication auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.username(), request.password())
+                new UsernamePasswordAuthenticationToken(usuarioPorEmail.getUsername(), request.password())
         );
 
         Usuario usuario = (Usuario) auth.getPrincipal();
         String token = jwtUtil.generateToken(usuario.getUsername(), "ROLE_" + usuario.getRole().name());
-        return ResponseEntity.ok(new JwtResponse(token, usuario.getUsername(), usuario.getRole()));
+        String nombre = null;
+        String apellidos = null;
+        var docente = docenteRepository.findByUsuario(usuario);
+        if (docente.isPresent()) {
+            nombre = docente.get().getNombre();
+            apellidos = docente.get().getApellidos();
+        }
+        return ResponseEntity.ok(new JwtResponse(token, usuario.getUsername(), usuario.getRole(), nombre, apellidos));
     }
 
     @Operation(summary = "Configurar contraseña inicial mediante token de email")
@@ -104,13 +119,30 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "Solicitar restablecimiento de contraseña",
+            description = "Envía un email con enlace para restablecer la contraseña. Siempre responde 200 para no revelar si el email existe.")
+    @ApiResponse(responseCode = "200", description = "Email enviado si el usuario existe")
+    @PostMapping("/forgot-password")
+    public ResponseEntity<Void> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        usuarioRepository.findByEmail(request.email()).ifPresent(usuario -> {
+            setupTokenRepository.deleteByUsuario(usuario);
+            String token = UUID.randomUUID().toString();
+            setupTokenRepository.save(new SetupToken(token, usuario));
+            emailService.enviarResetPassword(usuario.getEmail(), usuario.getUsername(), token);
+        });
+        return ResponseEntity.ok().build();
+    }
+
     @Operation(summary = "Cambiar contraseña (usuario autenticado)")
     @ApiResponse(responseCode = "200", description = "Contraseña cambiada correctamente")
     @ApiResponse(responseCode = "400", description = "Contraseña actual incorrecta")
     @PostMapping("/change-password")
     public ResponseEntity<Void> changePassword(
-            @AuthenticationPrincipal Usuario usuario,
+            org.springframework.security.core.Authentication authentication,
             @RequestBody ChangePasswordRequest request) {
+
+        Usuario usuario = usuarioRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new org.springframework.security.authentication.BadCredentialsException("Usuario no encontrado"));
 
         if (!passwordEncoder.matches(request.passwordActual(), usuario.getPassword())) {
             return ResponseEntity.badRequest().build();

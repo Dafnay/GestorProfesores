@@ -1,4 +1,4 @@
 package com.albavg.gestiondocentes.dto;
 
-public record LoginRequest(String username, String password) {
+public record LoginRequest(String email, String password) {
 }

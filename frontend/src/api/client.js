@@ -12,8 +12,9 @@ client.interceptors.request.use(config => {
 })
 
 export const authApi = {
-  login: (username, password) => client.post('/auth/login', { username, password }),
+  login: (email, password) => client.post('/auth/login', { email, password }),
   setupPassword: (token, password) => client.post('/auth/setup-password', { token, password }),
+  forgotPassword: (email) => client.post('/auth/forgot-password', { email }),
   changePassword: (passwordActual, passwordNuevo) => client.post('/auth/change-password', { passwordActual, passwordNuevo })
 }
 

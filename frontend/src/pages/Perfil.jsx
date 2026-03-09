@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { authApi } from '../api/client'
 import { useAuth } from '../context/AuthContext'
+import PasswordInput from '../components/PasswordInput'
 
 export default function Perfil() {
   const { auth } = useAuth()
@@ -36,15 +37,18 @@ export default function Perfil() {
   return (
     <>
       <h1>Mi perfil</h1>
-      <p style={{ marginBottom: '1.5rem', color: '#666' }}>Usuario: <strong>{auth?.username}</strong></p>
+      <p style={{ marginBottom: '1.5rem', color: '#666' }}>
+        {auth?.nombre
+          ? <><strong>{auth.nombre} {auth.apellidos}</strong></>
+          : <strong>{auth?.username}</strong>}
+      </p>
 
       <div style={{ maxWidth: '400px' }}>
         <h2 style={{ marginBottom: '1rem', fontSize: '1.1rem', color: '#2c3e50' }}>Cambiar contraseña</h2>
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <label style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', fontSize: '0.9rem' }}>
             Contraseña actual
-            <input
-              type="password"
+            <PasswordInput
               value={passwordActual}
               onChange={e => setPasswordActual(e.target.value)}
               required
@@ -53,8 +57,7 @@ export default function Perfil() {
           </label>
           <label style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', fontSize: '0.9rem' }}>
             Nueva contraseña
-            <input
-              type="password"
+            <PasswordInput
               value={passwordNuevo}
               onChange={e => setPasswordNuevo(e.target.value)}
               required
@@ -64,8 +67,7 @@ export default function Perfil() {
           </label>
           <label style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', fontSize: '0.9rem' }}>
             Confirmar nueva contraseña
-            <input
-              type="password"
+            <PasswordInput
               value={confirmar}
               onChange={e => setConfirmar(e.target.value)}
               required

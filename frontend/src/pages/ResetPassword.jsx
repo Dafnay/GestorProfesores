@@ -3,7 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom'
 import { authApi } from '../api/client'
 import PasswordInput from '../components/PasswordInput'
 
-export default function SetupPassword() {
+export default function ResetPassword() {
   const [searchParams] = useSearchParams()
   const token = searchParams.get('token')
   const navigate = useNavigate()
@@ -43,7 +43,7 @@ export default function SetupPassword() {
     <div className="login-container">
       <form className="login-form" onSubmit={handleSubmit}>
         <h1>Gestor de Profesores</h1>
-        <h2>Configura tu contraseña</h2>
+        <h2>Nueva contraseña</h2>
 
         <label>
           Nueva contraseña

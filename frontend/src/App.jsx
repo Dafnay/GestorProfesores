@@ -4,6 +4,8 @@ import Departamentos from './pages/Departamentos'
 import AsuntosPropios from './pages/AsuntosPropios'
 import Login from './pages/Login'
 import SetupPassword from './pages/SetupPassword'
+import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
 import Perfil from './pages/Perfil'
 import { useAuth } from './context/AuthContext'
 
@@ -12,6 +14,8 @@ export default function App() {
   const location = useLocation()
 
   if (location.pathname === '/setup-password') return <SetupPassword />
+  if (location.pathname === '/forgot-password') return <ForgotPassword />
+  if (location.pathname === '/reset-password') return <ResetPassword />
 
   if (!auth) return <Login />
 
@@ -21,7 +25,9 @@ export default function App() {
         <Link to="/">Docentes</Link>
         <Link to="/departamentos">Departamentos</Link>
         <Link to="/asuntos-propios">Asuntos Propios</Link>
-        <span className="nav-user">{auth.username} ({auth.role})</span>
+        <span className="nav-user">
+          {auth.nombre ? `${auth.nombre} ${auth.apellidos}` : auth.username} ({auth.role})
+        </span>
         <Link to="/perfil" className="nav-perfil">Mi perfil</Link>
         <button className="nav-logout" onClick={logout}>Cerrar sesión</button>
       </nav>

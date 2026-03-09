@@ -1,10 +1,12 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { authApi } from '../api/client'
+import PasswordInput from '../components/PasswordInput'
 
 export default function Login() {
   const { login } = useAuth()
-  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -14,8 +16,8 @@ export default function Login() {
     setError(null)
     setLoading(true)
     try {
-      const res = await authApi.login(username, password)
-      login(res.data.token, res.data.username, res.data.role)
+      const res = await authApi.login(email, password)
+      login(res.data.token, res.data.username, res.data.role, res.data.nombre, res.data.apellidos)
     } catch {
       setError('Usuario o contraseña incorrectos')
     } finally {
@@ -30,11 +32,11 @@ export default function Login() {
         <h2>Iniciar sesión</h2>
 
         <label>
-          Usuario
+          Email
           <input
-            type="text"
-            value={username}
-            onChange={e => setUsername(e.target.value)}
+            type="email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
             required
             autoFocus
           />
@@ -42,8 +44,7 @@ export default function Login() {
 
         <label>
           Contraseña
-          <input
-            type="password"
+          <PasswordInput
             value={password}
             onChange={e => setPassword(e.target.value)}
             required
@@ -55,6 +56,10 @@ export default function Login() {
         <button type="submit" disabled={loading}>
           {loading ? 'Entrando...' : 'Entrar'}
         </button>
+
+        <Link to="/forgot-password" style={{ textAlign: 'center', fontSize: '0.85rem', color: '#2c3e50' }}>
+          He olvidado mi contraseña
+        </Link>
       </form>
     </div>
   )
