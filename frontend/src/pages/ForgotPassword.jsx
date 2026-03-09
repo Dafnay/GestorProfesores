@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { authApi } from '../api/client'
+import logoDark from '../assets/images/icon_dark.png'
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('')
@@ -23,6 +24,7 @@ export default function ForgotPassword() {
 
       <div className="login-split__panel">
         <form className="login-split__form" onSubmit={handleSubmit}>
+          <img src={logoDark} alt="Logo" className="login-split__logo" />
           <h2>Recuperar contraseña</h2>
           <p className="login-split__subtitle">
             Introduce tu email y te enviaremos un enlace para restablecerla.

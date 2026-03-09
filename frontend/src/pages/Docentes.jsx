@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import { docentesApi, departamentosApi, rolesApi } from '../api/client'
+import { docentesApi, departamentosApi } from '../api/client'
 import { useAuth } from '../context/AuthContext'
 
-const formVacio = { nombre: '', apellidos: '', email: '', siglas: '', departamentoId: '', rolId: '' }
+const formVacio = { nombre: '', apellidos: '', email: '', siglas: '', departamentoId: '' }
 
 export default function Docentes() {
   const { auth } = useAuth()
@@ -12,7 +12,6 @@ export default function Docentes() {
   const [error, setError] = useState(null)
   const [mostrarFormulario, setMostrarFormulario] = useState(false)
   const [departamentos, setDepartamentos] = useState([])
-  const [roles, setRoles] = useState([])
   const [form, setForm] = useState(formVacio)
   const [guardando, setGuardando] = useState(false)
   const [formError, setFormError] = useState(null)
@@ -26,10 +25,9 @@ export default function Docentes() {
   function abrirFormulario() {
     setForm(formVacio)
     setFormError(null)
-    Promise.all([departamentosApi.getAll(), rolesApi.getAll()])
-      .then(([dRes, rRes]) => {
-        setDepartamentos(dRes.data)
-        setRoles(rRes.data)
+    departamentosApi.getAll()
+      .then(res => {
+        setDepartamentos(res.data)
         setMostrarFormulario(true)
       })
   }
@@ -49,8 +47,7 @@ export default function Docentes() {
     try {
       await docentesApi.crear({
         ...form,
-        departamentoId: form.departamentoId ? Number(form.departamentoId) : null,
-        rolId: form.rolId ? Number(form.rolId) : null
+        departamentoId: form.departamentoId ? Number(form.departamentoId) : null
       })
       const lista = await docentesApi.getOrdenados()
       setDocentes(lista.data)
@@ -101,16 +98,6 @@ export default function Docentes() {
                   ))}
                 </select>
               </label>
-              <label>
-                Rol
-                <select name="rolId" value={form.rolId} onChange={handleChange}>
-                  <option value="">— Sin rol —</option>
-                  {roles.map(r => (
-                    <option key={r.id} value={r.id}>{r.nombre}</option>
-                  ))}
-                </select>
-              </label>
-
               {formError && <p className="error">{formError}</p>}
 
               <div className="modal-actions">
@@ -132,7 +119,6 @@ export default function Docentes() {
             <th>Apellidos</th>
             <th>Email</th>
             <th>Departamento</th>
-            <th>Rol</th>
           </tr>
         </thead>
         <tbody>
@@ -143,7 +129,6 @@ export default function Docentes() {
               <td>{d.apellidos}</td>
               <td>{d.email}</td>
               <td>{d.departamento?.nombre ?? '-'}</td>
-              <td>{d.rol?.nombre ?? '-'}</td>
             </tr>
           ))}
         </tbody>

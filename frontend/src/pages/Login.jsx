@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { authApi } from '../api/client'
 import PasswordInput from '../components/PasswordInput'
+import logoDark from '../assets/images/icon_dark.png'
 
 export default function Login() {
   const { login } = useAuth()
@@ -37,6 +38,7 @@ export default function Login() {
 
       <div className="login-split__panel">
         <form className="login-split__form" onSubmit={handleSubmit}>
+          <img src={logoDark} alt="Logo" className="login-split__logo" />
           <h2>Iniciar sesión</h2>
 
           <label>
