@@ -41,6 +41,46 @@ public class DocenteService {
     }
 
     @Transactional
+    public Optional<Docente> actualizar(Long id, DocenteRequest request) {
+        return docenteRepository.findById(id).map(docente -> {
+            docente.setNombre(request.nombre());
+            docente.setApellidos(request.apellidos());
+            docente.setEmail(request.email());
+            docente.setSiglas(request.siglas());
+            if (request.departamentoId() != null) {
+                Departamento dep = new Departamento();
+                dep.setId(request.departamentoId());
+                docente.setDepartamento(dep);
+            } else {
+                docente.setDepartamento(null);
+            }
+            if (request.rolId() != null) {
+                Rol rol = new Rol();
+                rol.setId(request.rolId());
+                docente.setRol(rol);
+            } else {
+                docente.setRol(null);
+            }
+            if (docente.getUsuario() != null) {
+                docente.getUsuario().setEmail(request.email());
+                docente.getUsuario().setUsername(request.siglas());
+            }
+            return docenteRepository.save(docente);
+        });
+    }
+
+    @Transactional
+    public boolean eliminar(Long id) {
+        return docenteRepository.findById(id).map(docente -> {
+            if (docente.getUsuario() != null) {
+                setupTokenRepository.deleteByUsuario(docente.getUsuario());
+            }
+            docenteRepository.delete(docente);
+            return true;
+        }).orElse(false);
+    }
+
+    @Transactional
     public Docente guardar(DocenteRequest request) {
         Docente docente = new Docente();
         docente.setNombre(request.nombre());

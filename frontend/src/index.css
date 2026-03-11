@@ -569,7 +569,7 @@ tr:hover {
   background: none !important;
 }
 
-button:not(.sidebar__logout):not(.sidebar__toggle-float):not(.login-form button):not(.password-toggle) {
+button:not(.sidebar__logout):not(.sidebar__toggle-float):not(.login-form button):not(.password-toggle):not(.btn) {
   padding: 0.5rem 1.2rem;
   background-color: #2c3e50;
   color: white;
@@ -581,11 +581,11 @@ button:not(.sidebar__logout):not(.sidebar__toggle-float):not(.login-form button)
   transition: background-color 0.2s;
 }
 
-button:not(.sidebar__logout):not(.sidebar__toggle-float):not(.login-form button):not(.password-toggle):hover:not(:disabled) {
+button:not(.sidebar__logout):not(.sidebar__toggle-float):not(.login-form button):not(.password-toggle):not(.btn):hover:not(:disabled) {
   background-color: #3d5166;
 }
 
-button:not(.sidebar__logout):not(.sidebar__toggle-float):not(.login-form button):not(.password-toggle):disabled {
+button:not(.sidebar__logout):not(.sidebar__toggle-float):not(.login-form button):not(.password-toggle):not(.btn):disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
@@ -653,11 +653,190 @@ button:not(.sidebar__logout):not(.sidebar__toggle-float):not(.login-form button)
   margin-top: 0.5rem;
 }
 
-.modal-actions button[type="button"] {
+.modal-actions button[type="button"]:not(.btn) {
   background-color: #aaa;
   margin-bottom: 0;
 }
 
-.modal-actions button[type="button"]:hover {
+.modal-actions button[type="button"]:not(.btn):hover {
   background-color: #888;
+}
+
+/* Modal de confirmación */
+.modal--confirm {
+  max-width: 360px;
+  text-align: center;
+  align-items: center;
+}
+
+.modal-confirm__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: rgba(192, 57, 43, 0.1);
+  color: #c0392b;
+  margin-bottom: 0.25rem;
+}
+
+.modal-confirm__mensaje {
+  color: #666;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.modal--confirm .modal-actions {
+  justify-content: center;
+}
+
+/* ── Button component ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background-color 0.2s, opacity 0.2s;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Sizes */
+.btn--sm {
+  padding: 0.35rem 0.8rem;
+  font-size: 0.8rem;
+}
+
+.btn--md {
+  padding: 0.5rem 1.2rem;
+}
+
+/* Variants */
+.btn--primary {
+  background-color: #2c3e50;
+  color: white;
+}
+.btn--primary:hover:not(:disabled) {
+  background-color: #3d5166;
+}
+
+.btn--secondary {
+  background-color: #aaa;
+  color: white;
+}
+.btn--secondary:hover:not(:disabled) {
+  background-color: #888;
+}
+
+.btn--danger {
+  background-color: #c0392b;
+  color: white;
+}
+.btn--danger:hover:not(:disabled) {
+  background-color: #a93226;
+}
+
+.btn--ghost {
+  background-color: transparent;
+  color: #2c3e50;
+  border: 1px solid #2c3e50;
+}
+.btn--ghost:hover:not(:disabled) {
+  background-color: rgba(44, 62, 80, 0.08);
+}
+
+.btn--outline-primary {
+  background-color: transparent;
+  color: #2c3e50;
+  border: 1px solid #2c3e50;
+}
+.btn--outline-primary:hover:not(:disabled) {
+  background-color: #2c3e50;
+  color: white;
+}
+
+.btn--outline-green {
+  background-color: transparent;
+  color: #27ae60;
+  border: 1px solid #27ae60;
+}
+.btn--outline-green:hover:not(:disabled) {
+  background-color: #27ae60;
+  color: white;
+}
+
+.btn--outline-red {
+  background-color: transparent;
+  color: #c0392b;
+  border: 1px solid #c0392b;
+}
+.btn--outline-red:hover:not(:disabled) {
+  background-color: #c0392b;
+  color: white;
+}
+
+/* Icon */
+.btn__icon {
+  display: flex;
+  align-items: center;
+}
+
+/* Spinner */
+.btn__spinner {
+  width: 0.9em;
+  height: 0.9em;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: btn-spin 0.6s linear infinite;
+  flex-shrink: 0;
+}
+
+.btn--ghost .btn__spinner,
+.btn--ghost .btn__spinner {
+  border-color: rgba(44,62,80,0.3);
+  border-top-color: #2c3e50;
+}
+
+@keyframes btn-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Tooltip */
+.btn[data-tooltip] {
+  position: relative;
+}
+
+.btn[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1a252f;
+  color: white;
+  font-size: 0.75rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 200;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+
+.btn[data-tooltip]:hover:not(:disabled)::after {
+  opacity: 1;
 }

@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
 import { docentesApi, departamentosApi } from '../api/client'
 import { useAuth } from '../context/AuthContext'
+import Button from '../components/Button'
+import ConfirmModal from '../components/ConfirmModal'
+import { PlusIcon, PencilIcon, TrashIcon } from '../components/Icons'
 
 const formVacio = { nombre: '', apellidos: '', email: '', siglas: '', departamentoId: '' }
 
@@ -11,19 +14,41 @@ export default function Docentes() {
   const [docentes, setDocentes] = useState([])
   const [error, setError] = useState(null)
   const [mostrarFormulario, setMostrarFormulario] = useState(false)
+  const [editando, setEditando] = useState(null)
   const [departamentos, setDepartamentos] = useState([])
   const [form, setForm] = useState(formVacio)
   const [guardando, setGuardando] = useState(false)
   const [formError, setFormError] = useState(null)
+  const [confirmar, setConfirmar] = useState(null)
 
-  useEffect(() => {
-    docentesApi.getOrdenados()
+  function cargarDocentes() {
+    return docentesApi.getOrdenados()
       .then(res => setDocentes(res.data))
       .catch(() => setError('No se pudieron cargar los docentes. ¿Está el backend activo?'))
-  }, [])
+  }
 
-  function abrirFormulario() {
+  useEffect(() => { cargarDocentes() }, [])
+
+  function abrirCrear() {
+    setEditando(null)
     setForm(formVacio)
+    setFormError(null)
+    departamentosApi.getAll()
+      .then(res => {
+        setDepartamentos(res.data)
+        setMostrarFormulario(true)
+      })
+  }
+
+  function abrirEditar(d) {
+    setEditando(d)
+    setForm({
+      nombre: d.nombre,
+      apellidos: d.apellidos,
+      email: d.email,
+      siglas: d.siglas,
+      departamentoId: d.departamento?.id ?? ''
+    })
     setFormError(null)
     departamentosApi.getAll()
       .then(res => {
@@ -45,17 +70,32 @@ export default function Docentes() {
     setFormError(null)
     setGuardando(true)
     try {
-      await docentesApi.crear({
+      const payload = {
         ...form,
         departamentoId: form.departamentoId ? Number(form.departamentoId) : null
-      })
-      const lista = await docentesApi.getOrdenados()
-      setDocentes(lista.data)
+      }
+      if (editando) {
+        await docentesApi.actualizar(editando.id, payload)
+      } else {
+        await docentesApi.crear(payload)
+      }
+      await cargarDocentes()
       setMostrarFormulario(false)
     } catch {
-      setFormError('Error al crear el docente. Comprueba los datos.')
+      setFormError('Error al guardar el docente. Comprueba los datos.')
     } finally {
       setGuardando(false)
+    }
+  }
+
+  async function confirmarEliminar() {
+    try {
+      await docentesApi.eliminar(confirmar.id)
+      await cargarDocentes()
+    } catch {
+      setError('Error al eliminar el docente.')
+    } finally {
+      setConfirmar(null)
     }
   }
 
@@ -65,13 +105,20 @@ export default function Docentes() {
       {error && <p className="error">{error}</p>}
 
       {isAdmin && (
-        <button onClick={abrirFormulario}>+ Nuevo docente</button>
+        <Button
+          variant="outline-primary"
+          icon={<PlusIcon size={15} />}
+          onClick={abrirCrear}
+          style={{ marginBottom: '1.5rem' }}
+        >
+          Nuevo docente
+        </Button>
       )}
 
       {mostrarFormulario && (
         <div className="modal-overlay">
           <div className="modal">
-            <h2>Nuevo docente</h2>
+            <h2>{editando ? 'Editar docente' : 'Nuevo docente'}</h2>
             <form onSubmit={handleSubmit}>
               <label>
                 Nombre
@@ -99,16 +146,21 @@ export default function Docentes() {
                 </select>
               </label>
               {formError && <p className="error">{formError}</p>}
-
               <div className="modal-actions">
-                <button type="submit" disabled={guardando}>
-                  {guardando ? 'Guardando...' : 'Guardar'}
-                </button>
-                <button type="button" onClick={cerrarFormulario}>Cancelar</button>
+                <Button type="submit" loading={guardando}>Guardar</Button>
+                <Button variant="secondary" onClick={cerrarFormulario}>Cancelar</Button>
               </div>
             </form>
           </div>
         </div>
+      )}
+
+      {confirmar && (
+        <ConfirmModal
+          mensaje={`Se eliminará al docente "${confirmar.nombre} ${confirmar.apellidos}". Esta acción no se puede deshacer.`}
+          onConfirm={confirmarEliminar}
+          onCancel={() => setConfirmar(null)}
+        />
       )}
 
       <table>
@@ -119,6 +171,7 @@ export default function Docentes() {
             <th>Apellidos</th>
             <th>Email</th>
             <th>Departamento</th>
+            {isAdmin && <th>Acciones</th>}
           </tr>
         </thead>
         <tbody>
@@ -129,6 +182,24 @@ export default function Docentes() {
               <td>{d.apellidos}</td>
               <td>{d.email}</td>
               <td>{d.departamento?.nombre ?? '-'}</td>
+              {isAdmin && (
+                <td style={{ display: 'flex', gap: '0.5rem' }}>
+                  <Button
+                    size="sm"
+                    variant="outline-green"
+                    icon={<PencilIcon size={14} />}
+                    tooltip="Editar docente"
+                    onClick={() => abrirEditar(d)}
+                  />
+                  <Button
+                    size="sm"
+                    variant="outline-red"
+                    icon={<TrashIcon size={14} />}
+                    tooltip="Eliminar docente"
+                    onClick={() => setConfirmar(d)}
+                  />
+                </td>
+              )}
             </tr>
           ))}
         </tbody>

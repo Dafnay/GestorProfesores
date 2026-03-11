@@ -22,12 +22,17 @@ export const docentesApi = {
   getById: (id) => client.get(`/docentes/${id}`),
   getOrdenados: () => client.get('/docentes/ordenados'),
   getByDepartamento: (nombre) => client.get(`/docentes/departamento/${nombre}`),
-  crear: (data) => client.post('/docentes', data)
+  crear: (data) => client.post('/docentes', data),
+  actualizar: (id, data) => client.put(`/docentes/${id}`, data),
+  eliminar: (id) => client.delete(`/docentes/${id}`)
 }
 
 export const departamentosApi = {
   getAll: () => client.get('/departamentos'),
-  contarPorCodigo: (codigo) => client.get(`/departamentos/contar/${codigo}`)
+  contarPorCodigo: (codigo) => client.get(`/departamentos/contar/${codigo}`),
+  crear: (data) => client.post('/departamentos', data),
+  actualizar: (id, data) => client.put(`/departamentos/${id}`, data),
+  eliminar: (id) => client.delete(`/departamentos/${id}`)
 }
 
 export const rolesApi = {

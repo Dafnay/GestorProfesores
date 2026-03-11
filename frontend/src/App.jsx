@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Routes, Route, NavLink, useLocation } from 'react-router-dom'
+import { Routes, Route, NavLink, Navigate, useLocation } from 'react-router-dom'
 import Docentes from './pages/Docentes'
 import Departamentos from './pages/Departamentos'
 import AsuntosPropios from './pages/AsuntosPropios'
@@ -83,6 +83,7 @@ export default function App() {
 
   if (!auth) return <Login />
 
+  const isAdmin = auth?.role === 'ADMIN'
   const displayName = auth.nombre ? `${auth.nombre} ${auth.apellidos}` : auth.username
 
   return (
@@ -109,14 +110,18 @@ export default function App() {
         </div>
 
         <nav className="sidebar__nav">
-          <NavLink to="/" end className={({ isActive }) => 'sidebar__link' + (isActive ? ' sidebar__link--active' : '')} title="Docentes">
-            <span className="sidebar__icon"><IconDocentes /></span>
-            <span className="sidebar__label">Docentes</span>
-          </NavLink>
-          <NavLink to="/departamentos" className={({ isActive }) => 'sidebar__link' + (isActive ? ' sidebar__link--active' : '')} title="Departamentos">
-            <span className="sidebar__icon"><IconDepartamentos /></span>
-            <span className="sidebar__label">Departamentos</span>
-          </NavLink>
+          {isAdmin && (
+            <NavLink to="/" end className={({ isActive }) => 'sidebar__link' + (isActive ? ' sidebar__link--active' : '')} title="Docentes">
+              <span className="sidebar__icon"><IconDocentes /></span>
+              <span className="sidebar__label">Docentes</span>
+            </NavLink>
+          )}
+          {isAdmin && (
+            <NavLink to="/departamentos" className={({ isActive }) => 'sidebar__link' + (isActive ? ' sidebar__link--active' : '')} title="Departamentos">
+              <span className="sidebar__icon"><IconDepartamentos /></span>
+              <span className="sidebar__label">Departamentos</span>
+            </NavLink>
+          )}
           <NavLink to="/asuntos-propios" className={({ isActive }) => 'sidebar__link' + (isActive ? ' sidebar__link--active' : '')} title="Asuntos Propios">
             <span className="sidebar__icon"><IconAsuntos /></span>
             <span className="sidebar__label">Asuntos Propios</span>
@@ -144,8 +149,8 @@ export default function App() {
 
       <main className="main-content">
         <Routes>
-          <Route path="/" element={<Docentes />} />
-          <Route path="/departamentos" element={<Departamentos />} />
+          <Route path="/" element={isAdmin ? <Docentes /> : <Navigate to="/asuntos-propios" replace />} />
+          <Route path="/departamentos" element={isAdmin ? <Departamentos /> : <Navigate to="/asuntos-propios" replace />} />
           <Route path="/asuntos-propios" element={<AsuntosPropios />} />
           <Route path="/perfil" element={<Perfil />} />
         </Routes>

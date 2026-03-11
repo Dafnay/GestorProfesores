@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -55,10 +54,36 @@ public class DocenteController {
     }
 
     @Operation(summary = "Crear un nuevo docente (solo ADMIN)")
-    @ApiResponse(responseCode = "201", description = "Docente creado correctamente")
-    @PreAuthorize("hasRole('ADMIN')")
+    @ApiResponse(responseCode = "201", description = "Docente creado correctamente",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = Docente.class)))
     @PostMapping
     public ResponseEntity<Docente> crear(@RequestBody DocenteRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(docenteService.guardar(request));
+    }
+
+    @Operation(summary = "Actualizar un docente existente (solo ADMIN)")
+    @ApiResponse(responseCode = "200", description = "Docente actualizado",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = Docente.class)))
+    @ApiResponse(responseCode = "404", description = "Docente no encontrado", content = @Content)
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Docente> actualizar(
+            @Parameter(description = "ID del docente") @PathVariable Long id,
+            @RequestBody DocenteRequest request) {
+        return docenteService.actualizar(id, request)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @Operation(summary = "Eliminar un docente (solo ADMIN)")
+    @ApiResponse(responseCode = "204", description = "Docente eliminado correctamente")
+    @ApiResponse(responseCode = "404", description = "Docente no encontrado", content = @Content)
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminar(
+            @Parameter(description = "ID del docente") @PathVariable Long id) {
+        return docenteService.eliminar(id)
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
     }
 }

@@ -9,7 +9,8 @@ import lombok.AllArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Departamento {
+public class
+Departamento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
