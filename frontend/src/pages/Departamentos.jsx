@@ -12,7 +12,6 @@ export default function Departamentos() {
   const isAdmin = auth?.role === 'ADMIN'
 
   const [departamentos, setDepartamentos] = useState([])
-  const [conteos, setConteos] = useState({})
   const [error, setError] = useState(null)
   const [mostrarFormulario, setMostrarFormulario] = useState(false)
   const [editando, setEditando] = useState(null)
@@ -23,21 +22,7 @@ export default function Departamentos() {
 
   function cargarDepartamentos() {
     return departamentosApi.getAll()
-      .then(res => {
-        const lista = res.data
-        setDepartamentos(lista)
-        return Promise.all(
-          lista.map(d =>
-            departamentosApi.contarPorCodigo(d.codigo)
-              .then(r => ({ codigo: d.codigo, count: r.data }))
-          )
-        )
-      })
-      .then(resultados => {
-        const map = {}
-        resultados.forEach(({ codigo, count }) => { map[codigo] = count })
-        setConteos(map)
-      })
+      .then(res => setDepartamentos(res.data))
       .catch(() => setError('No se pudieron cargar los departamentos. ¿Está el backend activo?'))
   }
 
@@ -156,7 +141,6 @@ export default function Departamentos() {
             <th>Código</th>
             <th>Nombre</th>
             <th>Teléfono</th>
-            <th>Nº docentes</th>
             {isAdmin && <th>Acciones</th>}
           </tr>
         </thead>
@@ -166,7 +150,6 @@ export default function Departamentos() {
               <td>{d.codigo}</td>
               <td>{d.nombre}</td>
               <td>{d.telefono ?? '-'}</td>
-              <td>{conteos[d.codigo] ?? '—'}</td>
               {isAdmin && (
                 <td style={{ display: 'flex', gap: '0.5rem' }}>
                   <Button
